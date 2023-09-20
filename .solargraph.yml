@@ -1,0 +1,9 @@
+require_paths:
+- "c:/Program Files/SketchUp/SketchUp 2017/Tools"
+- src
+
+require:
+- sketchup-api-stubs
+
+reporters:
+- rubocop
