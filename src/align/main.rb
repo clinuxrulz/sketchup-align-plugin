@@ -49,7 +49,7 @@ class AlignTool
     parents = []
     if entities.count > 0
       entity = entities[0]
-      if entity.is_a?(Sketchup::Group)
+      if entity.is_a?(Sketchup::Group) || entity.is_a?(Sketchup::ComponentInstance)
         parents << entity
       end
     end
