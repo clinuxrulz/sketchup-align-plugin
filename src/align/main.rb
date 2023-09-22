@@ -164,7 +164,8 @@ class AlignTool
         @face1.parent.entities.transform_entities(t, @face1.all_connected)
       end
     end
-    movement = pt2 - pt1
+    tmp = (pt2 - pt1).dot(n2)
+    movement = Geom::Vector3d::new(n2.x * tmp, n2.y * tmp, n2.z * tmp)
     t2 = Geom::Transformation.translation(movement)
     if @parents1.length != 0
       @parents1[0].transform!(t2)
