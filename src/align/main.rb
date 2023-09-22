@@ -11,6 +11,8 @@ class AlignTool
 
   @face1
   @face2
+  @reverseNormal1
+  @reverseNormal2
   @parents1
   @parents2
   @pt1
@@ -63,12 +65,14 @@ class AlignTool
         world_transformation = combind_parent_transformations(@parents1)
         plane = transform_plane(@face1.plane, world_transformation)
         @pt1 = self.ray_plane_intersection(ray, plane)
+        @reverseNormal1 = ray[1].dot(Geom::Vector3d::new(plane[0], plane[1], plane[2])) > 0.0
       else
         @face2 = closestFaceParents[0]
         @parents2 = closestFaceParents[1]
         world_transformation = combind_parent_transformations(@parents2)
         plane = transform_plane(@face2.plane, world_transformation)
         @pt2 = self.ray_plane_intersection(ray, plane)
+        @reverseNormal1 = ray[1].dot(Geom::Vector3d::new(plane[0], plane[1], plane[2])) > 0.0
         self.do_align
       end
     end
@@ -153,11 +157,18 @@ class AlignTool
     puts "Face 2 plane: #{plane2}, point: #{pt2}"
     n1 = Geom::Vector3d.new(plane1[0], plane1[1], plane1[2])
     n2 = Geom::Vector3d.new(plane2[0], plane2[1], plane2[2])
-    ca = n1 % n2
+    if @reverseNormal1
+      n1 = Geom::Vector3d::new(-n1.x, -n1.y, -n1.z)
+    end
+    if @reverseNormal2
+      n2 = Geom::Vector3d::new(-n2.x, -n2.y, -n2.z)
+    end
+    tmp = Geom::Vector3d::new(-n1.x, -n1.y, -n1.z)
+    ca = tmp % n2
     a = Math.acos(ca)
-    if a.abs() > 0.001 * Math::PI / 180
+    if a.abs() > 0.001 * Math::PI / 180 && a.abs() < Math::PI - 0.001 * Math::PI / 180
       rot_vec = (n1 * n2).normalize
-      t = Geom::Transformation.rotation(pt1, rot_vec, a)
+      t = Geom::Transformation.rotation(pt1, rot_vec, -a)
       if @parents1.length != 0
         @parents1[0].transform!(t)
       else
