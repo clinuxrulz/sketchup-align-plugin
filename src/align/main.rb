@@ -165,6 +165,11 @@ class AlignTool
     end
     tmp = Geom::Vector3d::new(-n1.x, -n1.y, -n1.z)
     ca = tmp % n2
+    if ca < -1.0
+      ca = -1.0
+    elsif ca > 1.0
+      ca = 1.0
+    end
     a = Math.acos(ca)
     if a.abs() > 0.001 * Math::PI / 180 && a.abs() < Math::PI - 0.001 * Math::PI / 180
       rot_vec = (n1 * n2).normalize
